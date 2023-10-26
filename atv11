@@ -1,0 +1,250 @@
+<!--aluno céu do nascimento-->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>programa gerenciados contas de banco</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .left {
+            flex: 1;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+        }
+
+        .right {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .navbar {
+            background-color: black;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .footer {
+            background-color: blue;
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        label {
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: green;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gerenciador de Contas Bancárias</h1>
+
+    <div>
+        <h2>Inserir Conta</h2>
+        <label for="agencia">Agência:</label>
+        <input type="text" id="agencia">
+        <br>
+        <label for="numero">Número:</label>
+        <input type="text" id="numero">
+        <br>
+        <label for="tipo">Tipo:</label>
+        <select id="tipo">
+            <option value="Conta Corrente">Conta Corrente</option>
+            <option value="Conta Poupança">Conta Poupança</option>
+            <option value="Conta Universitária">Conta Universitária</option>
+        </select>
+        <br>
+        <label for="saldo">Saldo:</label>
+        <input type="text" id="saldo">
+        <br>
+        <button onclick="inserirConta()">Inserir</button>
+    </div>
+
+    <div>
+        <h2>Operações</h2>
+        <button onclick="visualizarContas()">Visualizar Contas</button>
+    </div>
+
+    <div>
+        <h2>Contas</h2>
+        <ul id="listaContas"></ul>
+    </div>
+    <div class="navbar">
+        <h1>Gerenciador de Contas Bancárias</h1>
+    </div>
+    <div class="container">
+        <div class="left">
+            <h2>Inserir Conta</h2>
+            <label for="agencia">Agência:</label>
+            <input type="text" id="agencia">
+            <br>
+            <label for="numero">Número:</label>
+            <input type="text" id="numero">
+            <br>
+            <label for="tipo">Tipo:</label>
+            <select id="tipo">
+                <option value="Conta Corrente">Conta Corrente</option>
+                <option value="Conta Poupança">Conta Poupança</option>
+                <option value="Conta Universitária">Conta Universitária</option>
+            </select>
+            <br>
+            <label for="saldo">Saldo:</label>
+            <input type="text" id="saldo">
+            <br>
+            <button onclick="inserirConta()">Inserir</button>
+        </div>
+        <div class="right">
+            <h2>Extrato</h2>
+            <ul id="listaContas"></ul>
+            <p>Saldo Total: <span id="saldoTotal">R$ 0.00</span></p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>&copy; 2023 Gerenciador de Contas Bancárias</p>
+    </div>
+    <script>
+        class ContaBancaria {
+            constructor(agencia, numero, tipo, saldo) {
+                this.agencia = agencia;
+                this.numero = numero;
+                this.tipo = tipo;
+                this.saldo = saldo;
+            }
+
+            getSaldo() {
+                return this.saldo;
+            }
+
+            setSaldo(valor) {
+                this.saldo = valor;
+            }
+
+            sacar(valor) {
+                if (this.saldo >= valor) {
+                    this.saldo -= valor;
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            depositar(valor) {
+                this.saldo += valor;
+            }
+        }
+
+        class ContaCorrente extends ContaBancaria {
+            constructor(agencia, numero, saldo, cartaoCredito) {
+                super(agencia, numero, "Conta Corrente", saldo);
+                this.cartaoCredito = cartaoCredito;
+            }
+
+            getCartaoCredito() {
+                return this.cartaoCredito;
+            }
+
+            setCartaoCredito(valor) {
+                this.cartaoCredito = valor;
+            }
+        }
+
+        class ContaPoupanca extends ContaBancaria {
+            constructor(agencia, numero, saldo) {
+                super(agencia, numero, "Conta Poupança", saldo);
+            }
+        }
+
+        class ContaUniversitaria extends ContaBancaria {
+            constructor(agencia, numero, saldo) {
+                super(agencia, numero, "Conta Universitária", saldo);
+            }
+
+            sacar(valor) {
+                if (valor <= 500 && this.saldo >= valor) {
+                    this.saldo -= valor;
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        const contas = [];
+
+        function inserirConta() {
+            const agencia = document.getElementById("agencia").value;
+            const numero = document.getElementById("numero").value;
+            const tipo = document.getElementById("tipo").value;
+            const saldo = parseFloat(document.getElementById("saldo").value);
+
+            let novaConta;
+
+            if (tipo === "Conta Corrente") {
+                const cartaoCredito = prompt("Informe o limite do cartão de crédito:");
+                novaConta = new ContaCorrente(agencia, numero, saldo, parseFloat(cartaoCredito));
+            } else if (tipo === "Conta Poupança") {
+                novaConta = new ContaPoupanca(agencia, numero, saldo);
+            } else if (tipo === "Conta Universitária") {
+                novaConta = new ContaUniversitaria(agencia, numero, saldo);
+            }
+
+            contas.push(novaConta);
+            alert("Conta inserida com sucesso!");
+        }
+
+        function visualizarContas() {
+            const listaContas = document.getElementById("listaContas");
+            listaContas.innerHTML = "";
+
+            contas.forEach((conta, index) => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `Conta ${index + 1}: ${conta.tipo} - Agência: ${conta.agencia}, Número: ${conta.numero}, Saldo: R$${conta.saldo.toFixed(2)}`;
+                listaContas.appendChild(listItem);
+            });
+        }
+    </script>
+</body>
+</html>
